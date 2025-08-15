@@ -1,0 +1,44 @@
+version: "3.9"
+
+services:
+  backend:
+    container_name: flask-python
+    build: .
+    ports:
+      - "8080:5000"
+    environment:
+      DATABASE_URL: postgresql+psycopg2://postgres:1111@db:5432/task1
+    depends_on:
+      db:
+        condition: service_healthy
+    networks:
+      - backend_network
+    volumes:
+      - ./static/uploads:/app/static/uploads
+
+
+  db:
+    container_name: postgres
+    image: postgres:15
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: 1111
+      POSTGRES_DB: task1
+    ports:
+      - "8000:5432"
+    networks:
+      - backend_network
+    volumes:
+      - db-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 5s
+      timeout: 3s
+      retries: 5
+
+volumes:
+  db-data:
+
+networks:
+  backend_network:
+    driver: bridge

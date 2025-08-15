@@ -1,0 +1,43 @@
+{% extends 'base.html' %}
+{% block content %}
+  <div class="row g-4">
+    <div class="col-lg-5">
+      <div class="card p-3 shadow-sm">
+        <h5 class="mb-3">Створити пост</h5>
+        <form method="post" action="{{ url_for('create_post') }}" enctype="multipart/form-data">
+          <div class="mb-3">
+            <textarea class="form-control" name="content" rows="3" placeholder="Що нового?"></textarea>
+          </div>
+          <div class="mb-3">
+            <input class="form-control" type="file" name="image" accept="image/*">
+            <div class="form-text text-secondary">Не більше 8MB. Підтримка: PNG, JPG, JPEG, GIF, WEBP.</div>
+          </div>
+          <div class="d-grid">
+            <button class="btn btn-primary" type="submit">Опублікувати</button>
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <div class="col-lg-7">
+      {% for post in posts %}
+        <article class="card p-3 mb-3 shadow-sm">
+          <div class="d-flex justify-content-between align-items-center mb-2">
+            <div class="fw-semibold">Анонім</div>
+            <time class="text-secondary small" datetime="{{ post.created_at.isoformat() }}">
+              {{ post.created_at.strftime('%Y-%m-%d %H:%M') }} UTC
+            </time>
+          </div>
+          {% if post.content %}
+            <p class="mb-2" style="white-space: pre-wrap;">{{ post.content }}</p>
+          {% endif %}
+          {% if post.image_url() %}
+            <img class="img-fluid img-post mt-2" src="{{ post.image_url() }}" alt="фото допису">
+          {% endif %}
+        </article>
+      {% else %}
+        <p class="text-secondary">Ще немає постів. Станьте першим!</p>
+      {% endfor %}
+    </div>
+  </div>
+{% endblock %}
